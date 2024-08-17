@@ -1,51 +1,51 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import Pagination from '../../components/Pagination.tsx';
+import { collections } from '../../content/config';
 
 const { chapter, number } = Astro.params;
-if (number === undefined || chapter === undefined) {
-   return Astro.redirect("/404");
+if (!chapter || !number) {
+  throw new Error('Missing chapter or number');
 }
+const chapters = Object.keys(collections);
+type ChapterPages = {
+   chapter: string;
+   pages: any;
+   current: boolean;
+}[]
+let chapterPages:ChapterPages = [];
 
-const prev = Astro.url.searchParams.get("prev");
+await Promise.all(
+  chapters.map(async (c) => {
+    const chapNum = c.replace('chapter-', '');
+    // @ts-ignore
+    const pages = await getCollection(c);
+    chapterPages.push({
+      chapter: chapNum,
+      pages: pages.sort((a, b) => parseInt(a.data.page) - parseInt(b.data.page)),
+      current: chapNum === chapter
+    });
+  })
+);
 
-if (prev) {
-   const imageexists = await fetch(`http://localhost:4321/assets/chapter-${chapter}/${number}.webp`);
-   
-   if (imageexists.status > 399) {
-      console.log("Image does not exist");
-      const nextchapter = await fetch(`http://localhost:4321/assets/chapter-${parseInt(chapter) - 1}/${number}.webp`);
-   
-      if (nextchapter.status > 399) {
-         console.log("CHAPTER does not exist");
-         return Astro.redirect("/404");
-      }
-      return Astro.redirect(`http://localhost:4321/chapter-${parseInt(chapter) - 1}/${number}`);
-   }
-} else {
-   const imageexists = await fetch(`http://localhost:4321/assets/chapter-${chapter}/${number}.webp`);
-   
-   if (imageexists.status > 399) {
-      console.log("Image does not exist");
-      const nextchapter = await fetch(`http://localhost:4321/assets/chapter-${parseInt(chapter) + 1}/${number}.webp`);
-   
-      if (nextchapter.status > 399) {
-         console.log("CHAPTER does not exist");
-         return Astro.redirect("/404");
-      }
-      return Astro.redirect(`http://localhost:4321/chapter-${parseInt(chapter) + 1}/${number}`);
-   }
-}
-
+// Sort the chapters
+chapterPages = chapterPages.sort((a, b) => parseInt(a.chapter) - parseInt(b.chapter));
+console.log(chapterPages);
+const currentChapter = chapterPages.find((c) => c.chapter === chapter);
+const lastPage = currentChapter!.pages[currentChapter!.pages.length - 1].data.page;
+const nextPageLink = (parseInt(number) < lastPage) ? `/chapter-${chapter}/${parseInt(number) + 1}` : `/chapter-${parseInt(currentChapter!.chapter) + 1}/${parseInt(number) + 1}`;
 
 ---
 
 <Layout title="Peach Boy | Momotaro Reimagined">
    <div class="grid grid-cols-8">
       <div class="col-span-4">
-         <a href={`/chapter-${chapter}/${parseInt(number) + 1}`}>
+         <a href={nextPageLink}>
             <img src={`/assets/chapter-${chapter}/${number}.webp`} alt="Peach"/>
          </a>
       </div>
+      
       <div class="bg-stone-100 col-span-4 p-20">
          <h1 class="">Peach Boy</h1>
          <p>This is a comic heavily inspired by the Japanese fairytale, <em>Momotaro</em>. 
@@ -53,11 +53,17 @@ if (prev) {
             Momotaro was the first story I ever read fully in Japanese, and this project is the longest running comic I've ever worked on. I hope you enjoy.
          </p>
          
-         <p><strong>Chapter {chapter}, page {number}</strong></p>
-         <nav class="flex gap-8">
-            <a href={`/chapter-1/1`}>First</a>
-            <a href={`/chapter-${chapter}/${parseInt(number) - 1}?prev=true`}>Previous</a>
-            <a href={`/chapter-${chapter}/${parseInt(number) + 1}`}>Next</a>
-         </nav>
+         <ul class="flex flex-col gap-4">
+            {chapterPages.map((c) => {
+                  return (
+                     <li>
+                        <h2 class="mb-3">
+                           <a href={`/chapter-${c.chapter}/${c.pages[0].data.page}`} class={`${c.current ? "" : " text-stone-600 hover:text-black"}`}>Chapter {c.chapter}</a>
+                        </h2>
+                        <Pagination chapter={parseInt(c.chapter)} currentChapter={parseInt(currentChapter!.chapter)} current={parseInt(number)} pages={c.pages} client:load/>
+                     </li>
+                  )
+            })}
+         </ul>
       </div>
 </Layout>
