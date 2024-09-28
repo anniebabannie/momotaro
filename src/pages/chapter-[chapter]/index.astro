@@ -1,7 +1,6 @@
 ---
-import { CollectionEntry, getCollection } from 'astro:content';
+import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
-import { Page, type GetStaticPaths } from 'astro';
 
 const { chapter } = Astro.params;
 
@@ -22,7 +21,7 @@ console.log("pageNumbers");
        </div>
     </div>
     <div class="bg-stone-100 col-span-4 p-20">
-       <h1 class="">Peach Boy</h1>
+       <h1><a href="/">Peach Boy</a></h1>
        <p>This is a comic heavily inspired by the Japanese fairytale, <em>Momotaro</em>. 
           While the basic plot points of the original story have been preserved, I've expanded on the characters and the world they inhabit.
           Momotaro was the first story I ever read fully in Japanese, and this project is the longest running comic I've ever worked on. I hope you enjoy.

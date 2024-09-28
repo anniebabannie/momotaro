@@ -23,7 +23,7 @@ await Promise.all(
     const pages = await getCollection(c);
     chapterPages.push({
       chapter: chapNum,
-      pages: pages.sort((a, b) => parseInt(a.data.page) - parseInt(b.data.page)),
+      pages: pages.sort((a, b) => a.data.page - b.data.page),
       current: chapNum === chapter
     });
   })
@@ -38,22 +38,24 @@ const nextPageLink = (parseInt(number) < lastPage) ? `/chapter-${chapter}/${pars
 
 ---
 
-<Layout title="Peach Boy | Momotaro Reimagined">
+<Layout title="Peach Boy Comic">
    <div class="grid grid-cols-8">
       <div class="col-span-4">
-         <a href={nextPageLink}>
-            <img src={`/assets/chapter-${chapter}/${number}.webp`} alt="Peach"/>
-         </a>
+         <div class="flex justify-center items-center h-screen">
+            <a href={nextPageLink}>
+               <img src={`/assets/chapter-${chapter}/${number}.webp`} alt="Peach Boy" class="max-h-screen max-w-full w-auto h-auto"/>
+            </a>
+         </div>
       </div>
       
-      <div class="bg-stone-100 col-span-4 p-20">
-         <h1 class="">Peach Boy</h1>
-         <p>This is a comic heavily inspired by the Japanese fairytale, <em>Momotaro</em>. 
+      <div class="col-span-4 p-20">
+         <h1 class="text-center"><a href="/" class="text-stone-900">Peach Boy</a></h1>
+         <p class="mb-8">This is a comic inspired by the Japanese fairytale, <em>Momotaro</em>. 
             While the basic plot points of the original story have been preserved, I've expanded on the characters and the world they inhabit.
             Momotaro was the first story I ever read fully in Japanese, and this project is the longest running comic I've ever worked on. I hope you enjoy.
          </p>
          
-         <ul class="flex flex-col gap-4">
+         <ul class="flex flex-col gap-8">
             {chapterPages.map((c) => {
                   return (
                      <li>
