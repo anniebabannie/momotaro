@@ -16,4 +16,5 @@ export const collections = {
   'chapter-3': chapter,
   'chapter-4': chapter,
   'chapter-5': chapter,
+  'chapter-6': chapter,
 };
