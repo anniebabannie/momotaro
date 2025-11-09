@@ -39,16 +39,16 @@ const nextPageLink = (parseInt(number) < lastPage) ? `/chapter-${chapter}/${pars
 ---
 
 <Layout title="Peach Boy Comic">
-   <div class="grid grid-cols-8">
-      <div class="col-span-4">
-         <div class="flex justify-center items-center h-screen">
+   <div class="grid grid-cols-1 lg:grid-cols-8">
+      <div class="col-span-1 lg:col-span-4 order-1">
+         <div class="flex justify-center items-center lg:h-screen">
             <a href={nextPageLink}>
-               <img src={`/assets/chapter-${chapter}/${number}.webp`} alt="Peach Boy" class="max-h-screen max-w-full w-auto h-auto"/>
+               <img src={`/assets/chapter-${chapter}/${number}.webp`} alt="Peach Boy" class="w-full lg:max-h-screen lg:max-w-full lg:w-auto lg:h-auto"/>
             </a>
          </div>
       </div>
       
-      <div class="col-span-4 p-20">
+      <div class="col-span-1 lg:col-span-4 p-6 lg:p-20 order-2">
          <h1 class="text-center"><a href="/" class="text-stone-900">Peach Boy</a></h1>
          <p class="mb-8">This is a comic inspired by the Japanese fairytale, <em>Momotaro</em>. 
             While the basic plot points of the original story have been preserved, I've expanded on the characters and the world they inhabit.
